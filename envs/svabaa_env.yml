@@ -1,0 +1,8 @@
+name: svabaa_env
+channels:
+  - bioconda
+  - conda-forge
+dependencies:
+  - svaba=1.2.0
+  - bwa
+  - samtools

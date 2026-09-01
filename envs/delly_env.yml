@@ -1,0 +1,7 @@
+name: delly_env
+channels:
+- conda-forge
+- bioconda
+
+dependencies:
+- delly=1.3.3

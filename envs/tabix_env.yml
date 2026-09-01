@@ -1,0 +1,8 @@
+name: tabix_env
+channels:
+- conda-forge
+- bioconda
+
+dependencies:
+- tabix=1.11
+- bcftools=1.22
