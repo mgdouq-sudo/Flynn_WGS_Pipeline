@@ -1,64 +1,152 @@
-# Flynn Lab Pediatric Osteosarcoma Tumor WGS Variant Detection Pipeline
+# Flynn Lab Pediatric Osteosarcoma WGS Pipeline
 
 ## Overview
-This pipeline processes whole-genome sequencing (WGS) data from osteosarcoma xenograft tumor samples to detect structural variants (SVs), copy number variants (CNVs), chromothripsis, and single nucleotide variants (SNVs). The workflow is implemented in Nextflow (v24.04.2) with supporting scripts in R (v4.5.1) and Bash (v5.3).
+This repository is a fork of [BU-BMSIP/Flynn_WGS_Analysis](https://github.com/BU-BMSIP/Flynn_WGS_Analysis), originally developed by Joshua Keegan, Sydney Sorbello, Joakin Mori, and Shugo Muratani in the Flynn Lab at Boston University School of Medicine. It extends the original pipeline with ALT status prediction, mutational timing analysis using PhylogicNDT, and expanded mutational profiling.
 
-For more information about the pipeline, please visit the [user guide](https://github.com/BU-BMSIP/Flynn_WGS_Analysis/blob/main/docs/User%20Guide%20Variant%20and%20Chromothripsis%20Detection%20for%20Xenografted%20Osteosarcoma%20Tumor%20Samples.pdf).
+The pipeline processes whole-genome sequencing (WGS) data from osteosarcoma xenograft tumor samples to detect structural variants (SVs), copy number variants (CNVs), and single nucleotide variants (SNVs), with additional analyses for ALT pathway activation, clonal evolution, and mutational profiling. The workflow is implemented in Nextflow (v24.04.2) with supporting scripts in R (v4.5.1) and Bash (v5.3).
 
-The pipeline is designed for samples initially xenografted into mouse models, sequenced with Illumina short-read WGS (paired-end, 60× coverage), and delivered in CRAM format. It automatically handles mouse contamination removal and integrates results from multiple SV callers to reduce false positives. CNV is performed using a Panel of Normals and with further computation to find the absolute copy number. Chromothripsis detection is performed using the SV and CNV analysis. Finally, SNV analysis is performed to investigate genes of interest. 
+The pipeline is designed for samples initially xenografted into mouse models, sequenced with Illumina short-read WGS (paired-end, 60× coverage), and delivered in CRAM format. It automatically handles mouse contamination removal and integrates results from multiple SV callers to reduce false positives.
+
 ---
+
 ## Pipeline Workflow
-1. WGS Data Processing
-* QC: xengsort classify sorts reads into graft (human), host (mouse), both, ambiguous, and neither. Only graft, both, and combined datasets proceed.
-* Formatting: the final BAM file is sorted and marked for duplicates
 
-2. Structural Variant Detection
-* Detection: Three SV detection tools are deployed including Manta, Delly, and SVABA.
-* Merge: SV calls are merged using SURVIVOR in order to reduce false positive calls. 
+### 1. WGS Data Processing
+- **QC**: Xengsort classifies reads into graft (human), host (mouse), both, ambiguous, and neither — only graft, both, and combined reads proceed
+- **Formatting**: The final BAM file is sorted, duplicate-marked, and subsetted to the TP53/TCAB1 locus
 
-3. Copy Number Variant Detection
-* Detection: GATK4 is used to analyze somatic copy number.
-* Calculation: DoAbsolute is used to calculate the absolute copy number. 
+### 2. Structural Variant Detection
+- **Detection**: Three SV callers are deployed — Manta, Delly, and SvABA
+- **Merging**: SV calls are merged using SURVIVOR to reduce false positives, retaining SVs detected by at least two of three tools within 50 bp
+- **Filtering**: Common SVs (gnomAD v4.1), repetitive regions (RepeatMasker), and non-canonical chromosomes are removed; SVs >1Mb are excluded
+- **Annotation**: Final SV calls are annotated using AnnotSV
 
-4. Chromothripsis Analysis
-* Formatting: SV and CNV results are formatted into proper data formats. 
-* Detection: ShatterSeek is used to detect chromothripsis.
+### 3. Copy Number Variant Detection
+- **Detection**: GATK4 somatic CNV workflow using a Panel of Normals (PoN) built from 5 TARGET-ALL-P2 normal samples
+- **Absolute CN**: DoAbsolute is used to calculate absolute copy number, tumor purity, and ploidy
 
-5. Single Nucleotide Variant Analysis
-* Detection: GATK Mutect2 detects SNVs in genes of interest.
-* Annotation: ANNOVAR is used to annotate SNV calls.
---- 
+### 4. Single Nucleotide Variant Analysis
+- **Detection**: GATK Mutect2 in tumor-only mode
+- **Filtering**: BCFtools retains calls with ≥15 supporting reads, median mapping quality ≥40, and PASS filter
+- **Annotation**: GATK VariantAnnotation (dbSNP) and ANNOVAR (pathogenicity)
+
+### 5. Extensions
+- **ALT Status Prediction**: Downstream analysis using markdup BAM files as input. Telomere features (variant repeat counts, fusion rates, telomere content) are extracted using TelFusDetector, TelomereHunter, TelTools, TelSeq, and Mosdepth, and used to train a Random Forest classifier to predict ALT activation status (ALT+ vs ALT−) in pediatric osteosarcoma samples. This supports the central hypothesis that TCAB1/TP53 co-disruption is an early driver of ALT activation in a subset of pediatric osteosarcomas.
+
+- **Mutational Timing**: PhylogicNDT is used to reconstruct the clonal evolution of somatic mutations and determine whether TCAB1/TP53 co-disruption is an early (clonal) or late (subclonal) event in tumor evolution, providing insight into its role as a potential driver of ALT activation.
+
+- **Mutational Profiling**: Downstream analysis of SNV and SV outputs to investigate mutations of interest across a cohort of pediatric osteosarcoma PDX samples, including VAF distributions and gene-level recurrence.
+
+---
+
 ## Requirements
 
-Software
-* Core: Nextflow (v24.04.2), Bash (v5.3), R (v4.5.1)
-* Tools: SAMtools (v1.21), BBMap (v39.26), Xengsort (v2.0.8), BWA (v0.7.19), SeqKit (v2.10.0), Trimmomatic (v0.39), BCFtools (v1.22), Picard (v3.4.0), Manta (v1.6.0), Delly (v1.3.3), SvABA (v1.2.0), SURVIVOR (v1.0.7), Tabix (v1.11), bedtools (v2.30.0), AnnotSV (v3.4.6), GATK (v4.6.2.0), GDC client (v2.3.0), ShatterSeek (v1.1), GATK Mutect2 (v4.6.0.0), ANNOVAR (v2025Mar02)
+### Software
+| Tool | Version |
+|------|---------|
+| Nextflow | v24.04.2 |
+| R | v4.5.1 |
+| Bash | v5.3 |
+| SAMtools | v1.21 |
+| BBMap | v39.26 |
+| Xengsort | v2.0.8 |
+| BWA | v0.7.19 |
+| SeqKit | v2.10.0 |
+| Trimmomatic | v0.39 |
+| BCFtools | v1.22 |
+| Picard | v3.4.0 |
+| Manta | v1.6.0 |
+| Delly | v1.3.3 |
+| SvABA | v1.2.0 |
+| SURVIVOR | v1.0.7 |
+| Tabix | v1.11 |
+| bedtools | v2.30.0 |
+| AnnotSV | v3.4.6 |
+| GATK | v4.6.2.0 |
+| ANNOVAR | v2025Mar02 |
+| DoAbsolute | v2.2 |
+| GDC client | v2.3.0 |
+| PhylogicNDT | - |
+| TelFusDetector | - |
+| TelomereHunter | - |
+| TelSeq | - |
+| Mosdepth | - |
 
-Reference Data
-* Human genome: hg38 (UCSC-annotated FASTA)
-* Mouse genome: mm39 (UCSC-annotated FASTA)
-* GENCODE annotation: hg38 GFF (recommended)
+### Reference Data
+- Human genome: hg38 (UCSC-annotated FASTA)
+- Mouse genome: mm39 (UCSC-annotated FASTA)
+- GENCODE annotation: hg38 GFF (recommended)
+- gnomAD v4.1 (SV sites)
+- RepeatMasker hg38 BED
+- 1000 Genomes PoN (for Mutect2)
+- dbSNP v138
+
 ---
+
 ## Input Files
-* Sample sheet (CSV): Columns for sample_id and cram_path.
-* CRAM files: Located in refs/ directory unless otherwise specified.
-* Reference genomes: Stored in refs/ directory.
----
-## Running the Pipeline
-In order to run the pipeline, the sample CRAM files and reference files must be located in the refs/ directory. Additionally, your sample sheet must be labelled 'samplesheet.csv' and must be located in the home directory of the project.
+- `samplesheet.csv` — sample ID and CRAM file paths
+- `matched_normal.csv` — sample ID and matched normal BAM paths
+- CRAM files and reference genomes stored in `refs/`
 
-Create or activate the Nextflow Conda environment
-If you don’t already have a Nextflow environment:
-```
+---
+
+## Repository Contents
+
+| Directory/File | Description |
+|---|---|
+| `main.nf` | Main Nextflow script orchestrating the pipeline |
+| `nextflow.config` | Configuration file for resource allocation and execution |
+| `samplesheet.csv` | Sample sheet with CRAM paths |
+| `matched_normal.csv` | Matched normal BAM paths for PoN construction |
+| `run_nextflow_job.sh` | Batch job submission script for HPC cluster |
+| `terra_to_hpc.sh` | Script to transfer data from Terra/GCS to HPC |
+| `envs/` | Conda environment definitions (.yml) for all tools |
+| `modules/` | Nextflow process modules for all pipeline tools |
+| `scripts/` | Supporting R and Bash scripts |
+| `results/` | Pipeline outputs (auto-generated) |
+| `work/` | Nextflow intermediate files (auto-generated, cleared periodically) |
+
+---
+
+## Running the Pipeline
+
+### 1. Set up your environment
+
+Create or activate the Nextflow conda environment:
+```bash
 conda create -n nextflow_base nextflow
 conda activate nextflow_base
 ```
-Or, if you already have it:
-```
-conda activate nextflow_base
-```
-Run the pipeline
-```
+
+### 2. Configure paths
+
+Edit `nextflow.config` and set `proj_root` to your project directory and `your_project_group` to your HPC project group.
+
+### 3. Run the pipeline
+
+```bash
 nextflow run main.nf -profile conda,singularity,cluster
 ```
+
+Or submit as a batch job:
+```bash
+qsub run_nextflow_job.sh
+```
+
+---
+
+## Acknowledgements
+
+This pipeline was originally developed by Joshua Keegan, Sydney Sorbello, Joakin Mori, and Shugo Muratani in the Flynn Lab at Boston University Chobanian & Avedisian School of Medicine, with guidance from Dr. Joseph Orofino and Dr. Adam Labadorf. Extended by Mohammad Gharandouq.
+
+We are grateful to the Greehey Children's Cancer Research Institute (GCCRI) Patient-Derived Xenograft (PDX) Core and Technical Director Anna Rogojina for providing PDX tissue samples.
+
+This work was supported by the National Center for Advancing Translational Sciences, National Institutes of Health (BU-CTSI Grant 1UL1TR001430), and the Genome Science Institute at Boston University. R.L.F was supported by R01CA201446, an Edward Mallinckrodt Junior Foundation Award, and a Peter Paul Professorship.
+
+---
+
+## Principal Investigator
+**Dr. Rachel Flynn** — rlflynn@bu.edu  
+Departments of Pharmacology, Physiology & Biophysics, and Medicine  
+Boston University Chobanian & Avedisian School of Medicine
 
