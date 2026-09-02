@@ -1,9 +1,9 @@
 # Flynn Lab Pediatric Osteosarcoma WGS Pipeline
 
 ## Overview
-This repository is based on [BU-BMSIP/Flynn_WGS_Analysis](https://github.com/BU-BMSIP/Flynn_WGS_Analysis), originally developed by Joshua Keegan, Sydney Sorbello, Joakin Mori, and Shugo Muratani in the Flynn Lab at Boston University School of Medicine. It extends the original pipeline with ALT status prediction, mutational timing analysis using PhylogicNDT, and expanded mutational profiling.
+This repository is based on [BU-BMSIP/Flynn_WGS_Analysis](https://github.com/BU-BMSIP/Flynn_WGS_Analysis), originally developed by Joshua Keegan, Sydney Sorbello, Joakin Mori, and Shugo Muratani in the Flynn Lab at Boston University School of Medicine. It includes modifications to support downstream analyses of ALT pathway activation, mutational timing, and mutational profiling in pediatric osteosarcoma.
 
-The pipeline processes whole-genome sequencing (WGS) data from osteosarcoma xenograft tumor samples to detect structural variants (SVs), copy number variants (CNVs), and single nucleotide variants (SNVs), with additional analyses for ALT pathway activation, clonal evolution, and mutational profiling. The workflow is implemented in Nextflow (v24.04.2) with supporting scripts in R (v4.5.1) and Bash (v5.3).
+The pipeline processes whole-genome sequencing (WGS) data from osteosarcoma xenograft tumor samples to detect structural variants (SVs), copy number variants (CNVs), and single nucleotide variants (SNVs). The workflow is implemented in Nextflow (v24.04.2) with supporting scripts in R (v4.5.1) and Bash (v5.3).
 
 The pipeline is designed for samples initially xenografted into mouse models, sequenced with Illumina short-read WGS (paired-end, 60× coverage), and delivered in CRAM format. It automatically handles mouse contamination removal and integrates results from multiple SV callers to reduce false positives.
 
@@ -30,12 +30,13 @@ The pipeline is designed for samples initially xenografted into mouse models, se
 - **Filtering**: BCFtools retains calls with ≥15 supporting reads, median mapping quality ≥40, and PASS filter
 - **Annotation**: GATK VariantAnnotation (dbSNP) and ANNOVAR (pathogenicity)
 
-### 5. Extensions
-- **ALT Status Prediction**: Downstream analysis using markdup BAM files as input. Telomere features (variant repeat counts, fusion rates, telomere content) are extracted using TelFusDetector, TelomereHunter, TelTools, TelSeq, and Mosdepth, and used to train a Random Forest classifier to predict ALT activation status (ALT+ vs ALT−) in pediatric osteosarcoma samples. This supports the central hypothesis that TCAB1/TP53 co-disruption is an early driver of ALT activation in a subset of pediatric osteosarcomas.
+---
 
-- **Mutational Timing**: PhylogicNDT is used to reconstruct the clonal evolution of somatic mutations and determine whether TCAB1/TP53 co-disruption is an early (clonal) or late (subclonal) event in tumor evolution, providing insight into its role as a potential driver of ALT activation.
-
-- **Mutational Profiling**: Downstream analysis of SNV and SV outputs to investigate mutations of interest across a cohort of pediatric osteosarcoma PDX samples, including VAF distributions and gene-level recurrence.
+## Downstream Analyses
+This pipeline was modified to support the following downstream analyses, which are conducted separately:
+- ALT status prediction using telomere feature extraction and Random Forest classification
+- Mutational timing analysis using PhylogicNDT
+- Mutational profiling including VAF distributions and gene-level recurrence
 
 ---
 
@@ -67,10 +68,6 @@ The pipeline is designed for samples initially xenografted into mouse models, se
 | DoAbsolute | v2.2 |
 | GDC client | v2.3.0 |
 | PhylogicNDT | - |
-| TelFusDetector | - |
-| TelomereHunter | - |
-| TelSeq | - |
-| Mosdepth | - |
 
 ### Reference Data
 - Human genome: hg38 (UCSC-annotated FASTA)
@@ -146,7 +143,7 @@ This work was supported by the National Center for Advancing Translational Scien
 ---
 
 ## Principal Investigator
-**Dr. Rachel Flynn** — rlflynn@bu.edu  
-Departments of Pharmacology, Physiology & Biophysics, and Medicine  
+**Dr. Rachel Flynn** — rlflynn@bu.edu
+Departments of Pharmacology, Physiology & Biophysics, and Medicine
 Boston University Chobanian & Avedisian School of Medicine
 
