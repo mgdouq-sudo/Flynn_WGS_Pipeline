@@ -1,7 +1,7 @@
 # Flynn Lab Pediatric Osteosarcoma WGS Pipeline
 
 ## Overview
-This repository is a fork of [BU-BMSIP/Flynn_WGS_Analysis](https://github.com/BU-BMSIP/Flynn_WGS_Analysis), originally developed by Joshua Keegan, Sydney Sorbello, Joakin Mori, and Shugo Muratani in the Flynn Lab at Boston University School of Medicine. It extends the original pipeline with ALT status prediction, mutational timing analysis using PhylogicNDT, and expanded mutational profiling.
+This repository is based on [BU-BMSIP/Flynn_WGS_Analysis](https://github.com/BU-BMSIP/Flynn_WGS_Analysis), originally developed by Joshua Keegan, Sydney Sorbello, Joakin Mori, and Shugo Muratani in the Flynn Lab at Boston University School of Medicine. It extends the original pipeline with ALT status prediction, mutational timing analysis using PhylogicNDT, and expanded mutational profiling.
 
 The pipeline processes whole-genome sequencing (WGS) data from osteosarcoma xenograft tumor samples to detect structural variants (SVs), copy number variants (CNVs), and single nucleotide variants (SNVs), with additional analyses for ALT pathway activation, clonal evolution, and mutational profiling. The workflow is implemented in Nextflow (v24.04.2) with supporting scripts in R (v4.5.1) and Bash (v5.3).
 
