@@ -132,16 +132,6 @@ qsub run_nextflow_job.sh
 
 ---
 
-## Acknowledgements
-
-This pipeline was originally developed by Joshua Keegan, Sydney Sorbello, Joakin Mori, and Shugo Muratani in the Flynn Lab at Boston University Chobanian & Avedisian School of Medicine, with guidance from Dr. Joseph Orofino and Dr. Adam Labadorf. Extended by Mohammad Gharandouq.
-
-We are grateful to the Greehey Children's Cancer Research Institute (GCCRI) Patient-Derived Xenograft (PDX) Core and Technical Director Anna Rogojina for providing PDX tissue samples.
-
-This work was supported by the National Center for Advancing Translational Sciences, National Institutes of Health (BU-CTSI Grant 1UL1TR001430), and the Genome Science Institute at Boston University. R.L.F was supported by R01CA201446, an Edward Mallinckrodt Junior Foundation Award, and a Peter Paul Professorship.
-
----
-
 ## Principal Investigator
 **Dr. Rachel Flynn** — rlflynn@bu.edu
 Departments of Pharmacology, Physiology & Biophysics, and Medicine
