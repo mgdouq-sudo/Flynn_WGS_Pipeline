@@ -14,7 +14,6 @@ process ANNOVAR {
     path(coding_change)
     path(retrieve_seq_from_fasta)
     path(variants_reduction)
-    path(varannot_out)
 
     output:
     path("*.txt"), emit: annovar_txt

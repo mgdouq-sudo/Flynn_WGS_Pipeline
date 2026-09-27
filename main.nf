@@ -23,24 +23,24 @@ include { MANTA_SVDETECTION } from './modules/manta_svdetection'
 include { DELLY_SVDETECTION } from './modules/delly_svdetection'
 include { PICARD_CREATESEQUENCEDICT } from './modules/picard_createseqeuncedict' 
 include { SVABA_SVDETECTION } from './modules/svaba_svdetection'
-include { SVABA_REWRITE_INSERTIONS } from './modules2/svaba_fixvcf_no_chmod'
-include { SURVIVOR_SVINTEGRATION; SURVIVOR_INSINTEGRATION } from './modules2/survivor_svintegration_workdir'
+include { SVABA_REWRITE_INSERTIONS } from './modules/svaba_fixvcf'
+include { SURVIVOR_SVINTEGRATION; SURVIVOR_INSINTEGRATION } from './modules/survivor_svintegration_workdir'
 include { TABIX_INDEXVCF; TABIX_INDEXDELLYVCF; TABIX_INDEXSVABAVCF} from './modules/tabix_indexvcf'
 include { BCFTOOLS_VIEW } from './modules/bcftools_view'
-include { BCFTOOLS_FILTERMANTA; BCFTOOLS_FILTERDELLY; BCFTOOLS_FILTERSVABA; BCFTOOLS_FILTERFORINS; BCFTOOLS_CONCAT; BCFTOOLS_UNZIP; BCFTOOLS_REMOVE_COMMONSV; BCFTOOLS_FILTER_CONTIGS; BCFTOOLS_FILTERSNV; BCFTOOLS_FILTERSIZE } from './modules2/bcftools_filter_WG'
-include { FILTER_COMMON_SVS } from './modules2/scr_find_overlapping_SV_samplename'
-include { BEDTOOLS_REMOVE_REPEATS } from './modules2/bedtools_remove_samplename'
-include { ANNOTSV_SVANNOTATION; ANNOTSV_FORREPEATS } from './modules2/annotsv_svannotation_samplename'
+include { BCFTOOLS_FILTERMANTA; BCFTOOLS_FILTERDELLY; BCFTOOLS_FILTERSVABA; BCFTOOLS_FILTERFORINS; BCFTOOLS_CONCAT; BCFTOOLS_UNZIP; BCFTOOLS_REMOVE_COMMONSV; BCFTOOLS_FILTER_CONTIGS; BCFTOOLS_FILTERSNV; BCFTOOLS_FILTERSIZE } from './modules/bcftools_filter_WG'
+include { FILTER_COMMON_SVS } from './modules/scr_find_overlapping_SV'
+include { BEDTOOLS_REMOVE_REPEATS } from './modules/bedtools_remove'
+include { ANNOTSV_SVANNOTATION; ANNOTSV_FORREPEATS } from './modules/annotsv_svannotation'
 // COPY NUMBER VARIANT ANALYSIS
 include { GATK_PREPROCESS_INTERVALS; GATK_ANNOTATE_INTERVALS; GATK_COLLECT_READ_COUNTS; GATK_CREATE_PON } from './modules/gatk_createPoN'
-include { PICARD_ADDREADGROUPS } from './modules2/picard_addreadgroups_1input/main.nf'
-include { GATK_MODEL_SEGMENTS_NO_PON } from './modules2/gatk_cnvdetection_nopon'
-include { GATK_COLLECT_READ_COUNTS_TUMOR; DENOISE_READ_COUNTS; COLLECT_ALLELIC_COUNTS_TUMOR; GATK_MODEL_SEGMENTS_TUMOR_ONLY; GATK_CALL_COPYRATIO_SEGMENTS; GATK_PLOT_DENOISED_COPYRATIOS; GATK_PLOT_MODELED_SEGMENTS } from './modules2/gatk_cnvdetection_samplename'
+include { PICARD_ADDREADGROUPS } from './modules/picard_addreadgroups'
+include { GATK_MODEL_SEGMENTS_NO_PON } from './modules/gatk_cnvdetection_nopon'
+include { GATK_COLLECT_READ_COUNTS_TUMOR; DENOISE_READ_COUNTS; COLLECT_ALLELIC_COUNTS_TUMOR; GATK_MODEL_SEGMENTS_TUMOR_ONLY; GATK_CALL_COPYRATIO_SEGMENTS; GATK_PLOT_DENOISED_COPYRATIOS; GATK_PLOT_MODELED_SEGMENTS } from './modules/gatk_cnvdetection'
 // SNV ANALYSIS
-include { GATK_MUTECT2; GATK_FILTERMUTECTCALLS; GATK_VARIANTANNOTATION } from './modules2/gatk_mutect2_WG'
-// include { GATK_MUTECT2_PURECN } from './modules2/gatk_mutect2_purecn' (PURE_CN ANALYSIS IS BEST WITH WES NOT WGS)
-include { ANNOVAR } from './modules2/annovar_WG'
-include { ANNOVAR_GNOMAD } from './modules2/annovar_gnomad_WG'
+include { GATK_MUTECT2; GATK_FILTERMUTECTCALLS; GATK_VARIANTANNOTATION } from './modules/gatk_mutect2_WG'
+// include { GATK_MUTECT2_PURECN } from './modules/gatk_mutect2_purecn' (PURE_CN ANALYSIS IS BEST WITH WES NOT WGS)
+include { ANNOVAR } from './modules/annovar'
+include { ANNOVAR_GNOMAD } from './modules/annovar_gnomad_WG'
 
 
 workflow {
