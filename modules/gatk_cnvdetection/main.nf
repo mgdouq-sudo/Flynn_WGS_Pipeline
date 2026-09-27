@@ -146,7 +146,7 @@ process GATK_PLOT_DENOISED_COPYRATIOS {
 
     input:
     tuple val(sample), path(standard)
-    tuple val(sample), path(denoised)
+    tuple val(sample_denoised), path(denoised)
     path ref_dict
 
     output:

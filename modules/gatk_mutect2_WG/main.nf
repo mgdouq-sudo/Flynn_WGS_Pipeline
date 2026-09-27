@@ -41,8 +41,8 @@ process GATK_FILTERMUTECTCALLS {
 
   input:
   tuple val(sample), path(mutect2_vcf)
-  tuple val(sample), path(mutect2_tbi)
-  tuple val(sample), path(mutect2_stats)
+  tuple val(sample_tbi), path(mutect2_tbi)
+  tuple val(sample_stats), path(mutect2_stats)
   path(ref)
   path(ref_index)
   path(ref_dict)

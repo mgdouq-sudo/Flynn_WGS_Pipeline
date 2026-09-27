@@ -20,7 +20,6 @@ process ANNOVAR {
     path("*vcf"), emit: annovar_vcf
 
     script:
-    def sample = vcf.simpleName
     """
     perl ${table_annovar} ${vcf} \
     ${humandb}/ \
